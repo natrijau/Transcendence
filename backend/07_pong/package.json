@@ -1,0 +1,20 @@
+{
+  "name": "07_pong_service",
+  "version": "1.0.0",
+  "description": "Pong server-side service",
+  "type": "module",
+  "main": "app.js",
+  "author": "MOI",
+  "dependencies": {
+    "fastify": "^4.0.0",
+    "@fastify/cookie": "^8.3.0",
+    "@fastify/websocket": "^8.0.0",
+    "ws": "^8.13.0",
+    "victor": "1.1.0"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "jest"
+  }
+}

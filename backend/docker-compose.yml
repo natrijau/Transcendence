@@ -1,0 +1,163 @@
+services:
+  #proxy-service:
+
+  #  container_name: proxy-service
+
+  #  build:
+  #    context: ./01_reverse_proxy
+  #    dockerfile: Dockerfile
+  #  ports:
+  #    - "3000:3000"
+  #  networks:
+  #    - transcendence-net  
+  #  restart: on-failure
+
+  twofa-service:
+    build: ./06_twofa
+    container_name: twofa-service
+    expose:
+      - "3000"
+    working_dir: /usr/src/app
+    networks:
+      - transcendence-net
+    restart: on-failure:3
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:3000/health" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 1s
+    volumes:
+      - twofa_db:/usr/src/app/
+
+  blackjack-service:
+    container_name: blackjack-service
+    build: ./08_blackjack
+    expose:
+      - "3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    networks:
+      - transcendence-net
+    depends_on:
+      twofa-service:
+        condition: service_healthy
+    restart: unless-stopped
+
+  proxy-service:
+    container_name: proxy-service
+    build:
+      context: ./01_reverse_proxy
+      dockerfile: Dockerfile
+    ports:
+      - "4343:443" # HTTPS
+    networks:
+      - transcendence-net
+    depends_on:
+      twofa-service:
+        condition: service_healthy
+    restart: on-failure:3
+
+  user-service:
+  
+    build: ./02_user
+    container_name: user-service
+    expose:
+      - "3000"
+    working_dir: /usr/src/app
+    networks:
+      - transcendence-net
+    depends_on:
+      twofa-service:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+    - user_db:/usr/src/app/data
+    - ./02_user/pictures:/usr/src/app/pictures
+    #- ./02_user/data:/usr/src/app/data/
+#    command: npm run dev
+
+
+  match-service:
+
+    build: ./03_match
+    container_name: match-service
+    expose:
+      - "3000"
+    working_dir: /usr/src/app
+    networks:
+      - transcendence-net
+    restart: unless-stopped
+    depends_on:
+      user-service:
+        condition: service_started
+      twofa-service:
+        condition: service_healthy
+    volumes:
+      - match_db:/usr/src/app
+#    command: npm run dev
+
+
+  tournament-service:
+
+    build: ./04_tournaments
+    container_name: tournament-service
+    expose:
+      - "3000"
+    working_dir: /usr/src/app
+    networks:
+      - transcendence-net
+    restart: unless-stopped
+    depends_on:
+      user-service:
+        condition: service_started
+      match-service:
+        condition: service_started
+      twofa-service:
+        condition: service_healthy
+    volumes:
+    - tournament_db:/usr/src/app/data/
+#    command: npm run dev
+
+  session-service:
+
+    build: ./05_session
+    container_name: session-service
+    expose:
+      - "3000"
+    working_dir: /usr/src/app
+    networks:
+      - transcendence-net
+    restart: unless-stopped
+    depends_on:
+      user-service:
+        condition: service_started
+      twofa-service:
+        condition: service_healthy
+    volumes:
+      - session_db:/usr/src/app/
+  # Server-side pong
+  pong-service:
+    build: ./07_pong
+    container_name: pong-service
+    expose:
+      - "3000"
+    working_dir: /usr/src/app
+    networks:
+      - transcendence-net
+    depends_on:
+      twofa-service:
+        condition: service_healthy
+    restart: unless-stopped
+
+networks:
+  transcendence-net:
+    driver: bridge
+
+volumes:
+  user_db:
+  tournament_db:
+  match_db:
+  session_db:
+  twofa_db:

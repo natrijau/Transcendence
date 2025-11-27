@@ -1,0 +1,21 @@
+# Node.js dependencies
+**/node_modules/
+**/package-lock.json
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Docker
+**/.env
+**/.dockerignore
+
+# Editor settings
+.vscode/
+.idea/
+*.swp

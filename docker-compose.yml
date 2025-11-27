@@ -1,0 +1,71 @@
+services:
+  # Services du backend
+  proxy-service:
+    extends:
+      file: ./backend/docker-compose.yml
+      service: proxy-service
+
+  user-service:
+    extends:
+      file: ./backend/docker-compose.yml
+      service: user-service
+
+  match-service:
+    extends:
+      file: ./backend/docker-compose.yml
+      service: match-service
+
+  tournament-service:
+    extends:
+      file: ./backend/docker-compose.yml
+      service: tournament-service
+
+  session-service:
+    extends:
+      file: ./backend/docker-compose.yml
+      service: session-service
+
+  twofa-service:
+    extends:
+      file: ./backend/docker-compose.yml
+      service: twofa-service
+  pong-service:
+    extends:
+      file: ./backend/docker-compose.yml
+      service: pong-service
+  blackjack-service:
+      extends:
+        file: ./backend/docker-compose.yml
+        service: blackjack-service
+      
+  # Service du frontend
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    networks:
+      - transcendence-net
+    restart: on-failure
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - /app/node_modules
+
+    working_dir: /app
+    depends_on:
+      - proxy-service
+    stdin_open: true   # permet de garder le conteneur actif
+    tty: true           # garde Vite en mode watch
+networks:
+  transcendence-net:
+    driver: bridge
+
+volumes:
+  user_db:
+  match_db:
+  tournament_db:
+  session_db:
+  twofa_db:

@@ -1,0 +1,19 @@
+{
+	"name": "01_reverse_proxy",
+	"version": "1.0.0",
+	"description": "Fastify reverse proxy",
+	"type": "module",
+	"main": "app.js",
+	"author": "TRIJAUD Nathan",
+	"dependencies": {
+		"fastify": "^4.29.1",
+		"@fastify/http-proxy": "9.0.0",
+    	"@fastify/cookie": "^8.3.0",
+		"@fastify/cors": "^8.2.0"
+	},
+	"scripts": {
+		"start": "node app.js",
+		"dev": "nodemon app.js",
+		"test": "jest"
+	}
+}

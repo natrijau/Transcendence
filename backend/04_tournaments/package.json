@@ -1,0 +1,21 @@
+{
+  "name": "04_tournaments",
+  "version": "1.0.0",
+  "description": "Fastify tournaments service example",
+  "type": "module",
+  "main": "index.js",
+  "author": "TRIJAUD Nathan",
+  "dependencies": {
+	"fastify": "^4.25.1",
+	"sqlite3": "^5.1.6",
+	"sqlite": "^4.2.1",
+    "@fastify/cors": "^8.2.0",
+    "@fastify/cookie": "^8.3.0",
+	"node-fetch": "^3.3.2"
+  },
+  "scripts": {
+	"start": "node index.js",
+	"dev": "nodemon index.js",
+	"test": "jest"
+  }
+}
